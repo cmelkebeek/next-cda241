@@ -31,5 +31,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-output
-          path: .next
+          path: next/
           retention-days: 1 # Conserve les artefacts pendant 1 jour seulement

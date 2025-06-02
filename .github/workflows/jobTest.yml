@@ -1,0 +1,32 @@
+name: Test Application
+
+on:
+  workflow_run:
+    workflows: ["Build Application"] # Nom du workflow de build
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Test de l'application
+        run: |
+          echo "Testing the application..."
+          # Ajoute ici les commandes pour tester ton application, par exemple :
+          npm run e2e:headless
+
+      - name: Upload des vidéos de test
+        if: always() # Exécute cette étape même si les tests échouent
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos
+          path: cypress/videos/
+          retention-days: 7 # Conserve les vidéos pendant 7 jours

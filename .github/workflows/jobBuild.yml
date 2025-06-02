@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build Application
 
 on:
   push:
@@ -19,17 +19,3 @@ jobs:
           # Ajoute ici les commandes pour construire ton projet, par exemple :
           npm install
           npm run build
-
-      - name: Test de l'application
-        run: |
-          echo "Testing the application..."
-          # Ajoute ici les commandes pour tester ton application, par exemple :
-          npm run e2e:headless
-
-      - name: Upload des vidéos de test
-        if: always() # Exécute cette étape même si les tests échouent
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-videos
-          path: cypress/videos/
-          retention-days: 7 # Conserve les vidéos pendant 7 jours

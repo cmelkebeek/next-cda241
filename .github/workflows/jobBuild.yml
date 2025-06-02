@@ -1,0 +1,27 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main # Déclencher l'action lorsque tu pousses sur main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Build du projet
+        run: |
+          echo "Building the project..."
+          # Ajoute ici les commandes pour construire ton projet, par exemple :
+          npm install
+          npm run build
+
+      - name: Test de l'application
+        run: |
+          echo "Testing the application..."
+          # Ajoute ici les commandes pour tester ton application, par exemple :
+          npm run e2e:headless

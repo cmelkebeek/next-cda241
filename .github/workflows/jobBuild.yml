@@ -29,7 +29,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: ${{ github.job.build == 'success' }}
 
     steps:
       - name: Checkout du code

@@ -28,6 +28,7 @@ jobs:
           npm run build
 
   test:
+    needs: build # Cette ligne indique que le job test dépend du job build
     runs-on: ubuntu-latest
 
     steps:

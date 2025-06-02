@@ -27,9 +27,32 @@ jobs:
           echo "Building the project..."
           npm run build
 
-      - name: Upload des artefacts du build
+  test:
+    runs-on: ubuntu-latest
+    if: ${{ github.job.build == 'success' }}
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Test de l'application
+        run: |
+          echo "Testing the application..."
+          npm run e2e:headless
+
+      - name: Upload des vidéos de test
+        if: always() # Exécute cette étape même si les tests échouent
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
-          path: next/
-          retention-days: 1 # Conserve les artefacts pendant 1 jour seulement
+          name: test-videos
+          path: cypress/videos/
+          retention-days: 7 # Conserve les vidéos pendant 7 jours

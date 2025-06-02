@@ -17,10 +17,26 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Télécharger les artefacts du build
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: build-output # Nom de l'artefact à télécharger
+          path: .next # Dossier où extraire les artefacts
+
       - name: Test de l'application
         run: |
           echo "Testing the application..."
-          # Ajoute ici les commandes pour tester ton application, par exemple :
           npm run e2e:headless
 
       - name: Upload des vidéos de test

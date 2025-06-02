@@ -13,9 +13,23 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
+      - name: Configuration de Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Installation des dépendances
+        run: npm ci
+
       - name: Build du projet
         run: |
           echo "Building the project..."
-          # Ajoute ici les commandes pour construire ton projet, par exemple :
-          npm install
           npm run build
+
+      - name: Upload des artefacts du build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: .next
+          retention-days: 1 # Conserve les artefacts pendant 1 jour seulement

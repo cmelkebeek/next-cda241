@@ -28,8 +28,7 @@ jobs:
 
       - name: Upload des vidéos de test
         if: always() # Exécute cette étape même si les tests échouent
-        uses: actions/upload-artifact@v3
+        uses: actions/download-artifact@v3
         with:
           name: test-videos
           path: cypress/videos/
-          retention-days: 7 # Conserve les vidéos pendant 7 jours

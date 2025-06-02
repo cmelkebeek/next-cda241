@@ -55,4 +55,4 @@ jobs:
         with:
           name: test-videos
           path: cypress/videos/
-          retention-days: 7 # Conserve les vidéos pendant 7 jours
+          retention-days: 1 # Conserve les vidéos pendant 7 jours

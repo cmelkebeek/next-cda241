@@ -72,7 +72,7 @@ jobs:
       - name: Déploiement de l'application
         run: |
           echo "Connexion SSH au serveur distant..."
-          ssh StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             cd next-cda241
             echo "Mise à jour du dépôt..."
             git pull origin main

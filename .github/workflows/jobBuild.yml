@@ -73,14 +73,14 @@ jobs:
         run: |
           echo "Connexion SSH au serveur distant..."
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          echo "Installation de Node.js..."
+            sudo apt-get update
+            sudo apt-get install -y nodejs npm git
+            echo "Installation de PM2..."
+            sudo npm install -g pm2
             cd next-cda241
             echo "Mise à jour du dépôt..."
             git pull origin main
-            echo "Installation de Node.js..."
-            sudo apt-get update
-            sudo apt-get install -y nodejs npm
-            echo "Installation de PM2..."
-            sudo npm install -g pm2
             echo "Installation des dépendances..."
             npm ci
             echo "Reconstruction du projet..."

@@ -66,6 +66,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Connexion à l'hôte distant en SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Déploiement de l'application
         run: |
           echo "Connexion SSH au serveur distant..."
           ssh StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'

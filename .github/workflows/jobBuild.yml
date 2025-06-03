@@ -56,3 +56,26 @@ jobs:
           name: test-videos
           path: cypress/videos/
           retention-days: 1 # Conserve les vidéos pendant 7 jours
+
+  deploy:
+    needs: test # Cette ligne indique que le job deploy dépend du job test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Connexion à l'hôte distant en SSH
+        run: |
+          echo "Connexion SSH au serveur distant..."
+          ssh  ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd next-cda241
+            echo "Mise à jour du dépôt..."
+            git pull origin main
+            echo "Installation des dépendances..."
+            npm ci
+            echo "Reconstruction du projet..."
+            npm run build
+            echo "Redémarrage de l'application..."
+            pm2 start 
+          EOF

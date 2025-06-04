@@ -1,27 +1,12 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
-    image: your-docker-image:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/cmelkebeek/next-cda241/next-app:dev
     ports:
-      - "3000:3000"
+      - "8080:3000"
     volumes:
       - .:/app
     environment:
       - NODE_ENV=development
     command: npm run dev
-
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: database
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-volumes:
-  db_data:

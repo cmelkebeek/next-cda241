@@ -17,3 +17,15 @@ jobs:
         run: |
           docker build -t ghcr.io/cmelkebeek/next-cda241/next-app:latest .
           docker push ghcr.io/cmelkebeek/next-cda241/next-app:latest
+
+      - name: Update container in production
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "docker pull ghcr.io/cmelkebeek/next-cda241/next-app:latest && \
+            docker stop next-app || true && \
+            docker rm next-app || true && \
+            docker run -d --name next-app -p 80:3000 ghcr.io/cmelkebeek/next-cda241/next-app:latest"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH__KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}

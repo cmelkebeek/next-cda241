@@ -8,4 +8,4 @@ jobs:
       - name: Build et push de l'image Docker
         run: |
           docker build -t ghcr.io/cmelkebeek/next-cda241/next-app:latest .
-          docker ghcr.io/cmelkebeek/next-cda241/next-app:latest
+          docker push ghcr.io/cmelkebeek/next-cda241/next-app:latest

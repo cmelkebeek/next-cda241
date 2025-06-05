@@ -1,48 +1,64 @@
-on:
-  push:
-    branches:
-      - main
-      - develop
+on: [push]
 
 jobs:
-  buildDocker:
+  build-push:
     runs-on: ubuntu-latest
-
-    # Utilisation d'un environnement GitHub selon la branche
-    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
-
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GIT_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Définir le tag selon la branche
-        id: vars
-        run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-            echo "TAG=latest" >> $GITHUB_ENV
-          else
-            echo "TAG=dev" >> $GITHUB_ENV
-          fi
+      #      - name: Build and push Docker image
+      #        run: |
+      #          docker build -t ghcr.io/${{ github.repository }}/next-app:latest .
+      #          docker push ghcr.io/${{ github.repository }}/next-app:latest
 
-      - name: Build et push de l'image Docker
-        run: |
-          docker build -t ghcr.io/cmelkebeek/next-cda241/next-app:${TAG} .
-          docker push ghcr.io/cmelkebeek/next-cda241/next-app:${TAG}
+      - name: Build and push Docker image with docker action
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}/next-app:${{ github.ref_name }}
 
-      - name: Mise à jour du container sur la machine distante
+  deploy-prod:
+    needs: build-push
+    environment:
+      name: prod
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main'
+    steps:
+      - name: Deploy
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            docker pull ghcr.io/cmelkebeek/next-cda241/next-app:${TAG}
-            docker stop next-cda241-app-1 || true
-            docker rm next-cda241-app-1 || true
-            docker run -d --name next-cda241-app-1 -p 80:3000 ghcr.io/cmelkebeek/next-cda241/next-app:${TAG}
+            cd prod
+            sudo docker compose -f docker-compose.prod.yml pull
+            sudo docker compose -f docker-compose.prod.yml up -d
+
+  deploy-test:
+    needs: build-push
+    environment:
+      name: test
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'develop'
+    steps:
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd test
+            sudo docker compose -f docker-compose.test.yml pull
+            sudo docker compose -f docker-compose.test.yml up -d
